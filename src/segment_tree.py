@@ -16,7 +16,7 @@ class SegmentTree:
    def do(self, o: int, l: int, r: int, val: int):
       self.lazy[o] += val
       self.sum[o] += (r - l + 1) * val
-      self.min[0] += val
+      self.min[o] += val
    
    def build(self, o: int, l: int, r: int):
       if l == r:
@@ -48,6 +48,10 @@ class SegmentTree:
       if L <= l and r <= R:
          return (self.min[o], self.sum[o])
       m = (l + r) // 2
+      if self.lazy[o]:
+         self.do(o * 2, l, m, self.lazy[o])
+         self.do(o * 2 + 1, m + 1, r, self.lazy[o])
+         self.lazy[o] = 0
       mn, s = inf, 0
       if L <= m:
          x, y = self.query(2 * o, l, m, L, R)
@@ -57,4 +61,5 @@ class SegmentTree:
          x, y = self.query(2 * o + 1, m + 1, r, L, R)
          mn = x if x < mn else mn
          s += y
+      self.maintain(o)
       return (mn, s)
